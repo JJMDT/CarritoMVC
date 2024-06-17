@@ -31,16 +31,37 @@ namespace CapaNegocio
             }
             if (string.IsNullOrEmpty(obj.password) || string.IsNullOrWhiteSpace(obj.password))
             {
-                obj.password = "9"; // Contraseña por defecto
+               // obj.password = "usuario123"; // Contraseña por defecto
+               //si la clave es varia , genera una clave automatica aleatoria
+                obj.password = CN_Recursos.GenerarClave();
             }
 
             // Convertir la contraseña a SHA-256
-            obj.password = CN_Recursos.ConvertirSha256(obj.password);
+           // obj.password = CN_Recursos.ConvertirSha256(obj.password);
 
             // Proceder con el registro del usuario
             if (string.IsNullOrEmpty(mensaje))
             {
-                return objCapaDato.Registrar(obj, out mensaje);
+
+                string clave = obj.password;
+                //string clave = CN_Recursos.GenerarClave();
+                string asunto = "Creacion de cuenta";
+                string mensaje_email = " Su cuenta fue creada correctamente, su password es: !clave!";
+                mensaje_email = mensaje_email.Replace("!clave!", clave);
+
+                bool respuesta = CN_Recursos.EnviarEmail(obj.email, asunto, mensaje_email);
+                if (respuesta)
+                {
+                    obj.password = CN_Recursos.ConvertirSha256(clave);
+                    return objCapaDato.Registrar(obj, out mensaje);
+
+                }
+                else
+                {
+                    mensaje = "No se puede enviar el email";
+                    return 0;
+                }
+
             }
             else
             {
