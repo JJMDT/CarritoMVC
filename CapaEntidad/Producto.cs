@@ -14,9 +14,12 @@ namespace CapaEntidad
         public Marca oMarca { get; set; }
         public Categoria oCategoria { get; set; }
         public decimal precio { get; set; }
+        public string precioTexto { get; set; }
         public int stock { get; set; }
         public string rutaImagen { get; set; }
         public string nombreImagen { get; set; }
         public bool activo { get; set; }
+        public string base64 { get; set; }
+        public string extension { get; set; }
     }
 }
