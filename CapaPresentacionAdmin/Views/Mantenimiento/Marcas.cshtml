@@ -4,5 +4,299 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Marcas</h2>
 
+
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Mantenimiento</a></li>
+    <li class="breadcrumb-item active">Marcas</li>
+</ol>
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-user me-1"></i>
+        Lista de Marcas
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-8">
+                <button class="btn btn-success" onclick="abrirModal()">Crear Nueva</button>
+            </div>
+        </div>
+        <hr />
+
+        <table id="tablaMarcas" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Descripcion</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="FormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Marca</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body ">
+                <input type="text" class="form-control" value="0" id="txtid">
+
+                <div class="row g-1">
+
+
+                    <div class="col-sm-6">
+                        <label for="txtdescripcion" class="form-label">Descripcion</label>
+                        <input type="text" class="form-control" id="txtdescripcion" placeholder="Samsung" autocomplete="off">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="txtestado" class="form-label">Estado</label>
+                        <select id="txtestado" class="form-select" aria-label="Activo">
+                            <option selected disabled>Seleccionar estado</option>
+                            <option value="1">Activo</option>
+                            <option value="0">No Activo</option>
+                        </select>
+                    </div>
+
+
+                </div>
+                @* mensaje de alerta*@
+                <div class="row mt-2">
+                    <div class="col-12">
+
+                        <div id="mensajeError" class="alert alert-danger" role="alert">
+                            A simple danger alert—check it out!
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="guardar()">Crear</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        var tablaData
+        var filaSeleccionada
+
+        
+
+
+        tablaData = $("#tablaMarcas").DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/2.0.8/i18n/es-ES.json',
+            },
+            Response: true,
+            ordering: false,
+            "ajax": {
+                 url: '@Url.Action("ListarMarcas", "Mantenimiento")',
+                 type: "GET",
+                 dataType: "json",
+            },
+            "columns": [
+                { data: "idMarca" },
+                { data: "descripcion" },
+                {
+                    data: "activo", "width":"50px", "render": function (valor) {
+                        if (valor) {
+                            return '<span class="badge text-bg-primary">SI</span>'
+
+                        } else {
+                            return '<span class="badge text-bg-danger">NO</span>'
+                        }
+
+
+
+                    }
+                },
+                {
+                    data: null, defaultContent:
+                        '<button type="button" onclick="abrirModal()" class="btn btn-success btn-sm btn-editar"> <i class="fas fa-pen"></i></button> ' +
+                        '<button type="button"  class="btn btn-danger btn-sm btn-eliminar ms-2" > <i class="fas fa-trash"></i></button> ',
+                    "orderable": false,
+                    "searchable": false,
+                        "width":"100px"
+                }
+
+
+            ]
+        })
+
+        function abrirModal(json) {
+                $("#mensajeError").hide()
+                $("#txtid").val(0),
+                $("#txtdescripcion").val(""),
+                $("#txtestado").prop('selectedIndex', 1) //toma una opcion del select, en este caso la opcion 0
+
+            if (json != null) {
+                    $("#txtid").val(json.idMarca),
+                    $("#txtdescripcion").val(json.descripcion),
+                    $("#txtestado").val(json.activo == true ? 1 : 0)
+
+            }
+
+
+            $("#FormModal").modal("show")
+        }
+        
+        //boton editar
+        $("#tablaMarcas tbody").on('click', '.btn-editar', function () {
+             filaSeleccionada = $(this).closest("tr");
+            let data = tablaData.row(filaSeleccionada).data();
+            console.log(data)
+            abrirModal(data)
+        })
+
+        //boton eliminar
+        $("#tablMarcas tbody").on('click', '.btn-eliminar', function () {
+            let marcaSeleccionada = $(this).closest("tr");
+            let data = tablaData.row(marcaSeleccionada).data();
+
+            //cartel alerta
+            swal({
+                title: "Estas seguro?",
+                text: "¿Desea eliminar la marca?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Si",
+                cancelButtonText: "No",
+                closeOnConfirm: true
+            },
+                function () {
+
+                    jQuery.ajax({
+                        url: '@Url.Action("EliminarMarca", "Mantenimiento")',
+                        type: "POST",
+                        data: JSON.stringify({ id: data.idMarca }),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+
+
+                            if (data.resultado) {
+
+                                tablaData.row(marcaSeleccionada).remove().draw();
+
+                                // swal("Deleted!", "Your imaginary file has been deleted.", "success");
+                            } else {
+
+                                swal("No se pudo eliminar", data.mensaje, "error");
+                            }
+
+                        },
+
+                        error: function (error) {
+
+                            console.log(error)
+                        },
+                        //beforeSend: function () {
+                        //    $(".modal-body").LoadingOverlay("show", {
+                        //        imageResizeFactor: 2,
+                        //        text: "Cargando...",
+                        //        size: 14
+                        //    })
+
+                        //}
+                    });
+
+                })
+
+
+        })
+
+        // boton guardar
+
+        function guardar() {
+            let marca = {
+
+                idMarca: $("#txtid").val(),
+                descripcion: $("#txtdescripcion").val(),
+                activo: $("#txtestado").val() == 1 ? true : false,
+
+            }
+            jQuery.ajax({
+                url: '@Url.Action("GuardarMarca", "Mantenimiento")',
+                type: "POST",
+                data: JSON.stringify({ objeto: marca }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $(".modal-body").LoadingOverlay("hide")
+
+
+
+
+                    //categoria nueva
+                    if (marca.idMarca == 0) {
+
+                        if (data.resultado != 0) {
+
+                            marca.idMarca = data.resultado;
+                            tablaData.row.add(marca).draw(false);
+                            $("#FormModal").modal("hide")
+                        }
+                        else {
+                        //tablaData.row(filaSeleccionada).data(usuario).draw(false)
+                        //$("#FormModal").modal("hide")
+                            // alert(data.mensaje)
+
+                            $("#mensajeError").text(data.mensaje)
+                            $("#mensajeError").show()
+
+                        }
+                    }
+
+                        // editar categoria
+
+                     else {
+                        if (data.resultado) {
+
+                            tablaData.row(filaSeleccionada).data(marca).draw(false);
+                            filaSeleccionada = null
+                            $("#FormModal").modal("hide")
+
+                        } else {
+                            $("#mensajeError").text(data.mensaje)
+                            $("#mensajeError").show()
+                        }
+
+                     }
+
+                },
+                error: function (error) {
+                    $(".modal-body").LoadingOverlay("hide")
+                    $("#mensajeError").text("Error Ajax")
+                    $("#mensajeError").show()
+                    console.log(error)
+                },
+                beforeSend: function () {
+                    $(".modal-body").LoadingOverlay("show", {
+                        imageResizeFactor: 2,
+                        text: "Cargando...",
+                        size: 14
+                    })
+
+                }
+            });
+
+
+            console.log(marca)
+        }
+
+
+
+    </script>
+}
