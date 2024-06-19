@@ -7,6 +7,8 @@ using CapaEntidad;
 using System.Data.SqlClient;
 using System.Data;
 using System.Globalization;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 
 namespace CapaDatos
@@ -21,10 +23,20 @@ namespace CapaDatos
             {
                 using (SqlConnection oConn = new SqlConnection(Conexion.conn))
                 {
-                   
-                    string query = "select p.nombre,p.descripcion, m.descripcion [DescMarca] , c.descripcion [DescCategoria],p.precio, p.stock, p.activo from producto as p inner join marca as m on m.idMarca = p.idMarca inner join categoria as c on c.idCategoria=p.idCategoria";
 
-                    SqlCommand cmd = new SqlCommand(query, oConn);
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("select p.idProducto, p.nombre, p.descripcion,");
+                    sb.AppendLine("m.idMarca, m.descripcion[descMarca],");
+                    sb.AppendLine("c.idCategoria, c.descripcion[descCategoria],");
+                    sb.AppendLine("p.precio, p.stock, p.rutaImagen, p.nombreImagen, p.activo");
+                    sb.AppendLine("from producto p");
+                    sb.AppendLine("inner join marca m on m.idMarca = p.idMarca");
+                    sb.AppendLine("inner join categoria c on c.idCategoria = p.idCategoria");
+
+                  
+
+
+                    SqlCommand cmd = new SqlCommand(sb.ToString(), oConn);
                     cmd.CommandType = CommandType.Text;
 
                     oConn.Open();
@@ -32,23 +44,21 @@ namespace CapaDatos
                     {
                         while (dr.Read())
                         {
-                            lista.Add(
-                                new Producto()
+                            lista.Add(new Producto()
                                 {
                                     idProducto = Convert.ToInt32(dr["idProducto"]),
                                     nombre = Convert.ToString(dr["nombre"]),
                                     descripcion = dr["descripcion"].ToString(),
-                                    oMarca =new Marca() { descripcion = Convert.ToString(dr["DescMarca"]) },
-                                    oCategoria =new Categoria() { descripcion = Convert.ToString(dr["DescCategoria"]) },
-                                    precio = Convert.ToDecimal(dr["precio"],new CultureInfo("es-AR")),
+                                    oMarca =new Marca() { idMarca = Convert.ToInt32(dr["idMarca"]) ,descripcion = dr["descMarca"].ToString() },
+                                oCategoria = new Categoria() { idCategoria = Convert.ToInt32(dr["idCategoria"]), descripcion = dr["descCategoria"].ToString() },
+                                precio = Convert.ToDecimal(dr["precio"],new CultureInfo("es-AR")),
                                     stock = Convert.ToInt32(dr["stock"]),
                                     rutaImagen = dr["RutaImagen"].ToString(),
                                     nombreImagen = dr["NombreImagen"].ToString(),
                                     activo = Convert.ToBoolean(dr["activo"])
 
 
-                                }
-                            );
+                                } );
                         }
                     }
                 }
@@ -144,22 +154,22 @@ namespace CapaDatos
             {
                 using (SqlConnection oConn = new SqlConnection(Conexion.conn))
                 {
-                    string query = "update producto set RutaImagen = @rutaImagen, NombreImagen = @nombreImagen where idProducto = @idProducto";
+                    string query = "update producto set rutaImagen = @rutaImagen, nombreImagen = @nombreImagen where idProducto = @idProducto";
 
-                    SqlCommand cmd = new SqlCommand("Registrar_Producto", oConn);
-                    cmd.Parameters.AddWithValue("RutaImagen", obj.rutaImagen);
-                    cmd.Parameters.AddWithValue("NombreImagen", obj.nombreImagen);
-                    cmd.Parameters.AddWithValue("idProducto", obj.idProducto);
+                    SqlCommand cmd = new SqlCommand(query, oConn);
+                    cmd.Parameters.AddWithValue("@rutaImagen", obj.rutaImagen);
+                    cmd.Parameters.AddWithValue("@nombreImagen", obj.nombreImagen);
+                    cmd.Parameters.AddWithValue("@idProducto", obj.idProducto);
                    
                     cmd.CommandType = CommandType.Text;
                     oConn.Open();
+
                     if (cmd.ExecuteNonQuery() > 0)
                     {
                         resultado = true;
                     }
                     else
                     {
-                        resultado= false;
                         mensaje = "No se pudo almacenar la imagen";
                     }
 

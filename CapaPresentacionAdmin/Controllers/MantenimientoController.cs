@@ -116,6 +116,7 @@ namespace CapaPresentacionAdmin.Controllers
         {
             List<Producto> oLista = new List<Producto>();
             oLista = new CN_Productos().Listar();
+            
 
             return Json(new { data = oLista }, JsonRequestBehavior.AllowGet);
 
@@ -135,7 +136,7 @@ namespace CapaPresentacionAdmin.Controllers
 
             decimal precio;
 
-            if (decimal.TryParse(oProducto.precioTexto,System.Globalization.NumberStyles.AllowDecimalPoint,new CultureInfo("es-AR"),out precio))
+            if (decimal.TryParse(oProducto.precioTexto,System.Globalization.NumberStyles.AllowDecimalPoint,new CultureInfo("es-PE"),out precio))
             {
                 oProducto.precio = precio;
                 
