@@ -130,13 +130,14 @@ namespace CapaPresentacionAdmin.Controllers
             string mensaje = string.Empty;
             bool operacionExitosa = true;
             bool guardarImgExito=true;
+           
 
             Producto oProducto=new Producto();
             oProducto=JsonConvert.DeserializeObject<Producto>(objeto);
 
             decimal precio;
 
-            if (decimal.TryParse(oProducto.precioTexto,System.Globalization.NumberStyles.AllowDecimalPoint,new CultureInfo("es-PE"),out precio))
+            if (decimal.TryParse(oProducto.precioTexto,System.Globalization.NumberStyles.AllowDecimalPoint,new CultureInfo("es-AR"),out precio))
             {
                 oProducto.precio = precio;
                 

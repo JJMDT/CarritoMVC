@@ -25,6 +25,7 @@ namespace CapaNegocio
             {
                 mensaje = "El nombre del producto no puede ser vacio";
             }
+         
             else if (string.IsNullOrEmpty(obj.descripcion) || string.IsNullOrWhiteSpace(obj.descripcion))
             {
                 mensaje = "La descripcion  del producto no puede ser vacio";
@@ -41,6 +42,7 @@ namespace CapaNegocio
             {
                 mensaje = "Debe ingresar el precio del producto";
             }
+            
             else if (obj.stock == 0)
             {
                 mensaje = "Debe ingresar el stock del producto";

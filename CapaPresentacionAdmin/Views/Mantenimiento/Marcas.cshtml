@@ -47,7 +47,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body ">
-                <input type="text" class="form-control" value="0" id="txtid">
+                <input type="text" class="form-control" value="0" id="txtid" hidden>
 
                 <div class="row g-1">
 
@@ -160,7 +160,7 @@
         })
 
         //boton eliminar
-        $("#tablMarcas tbody").on('click', '.btn-eliminar', function () {
+        $("#tablaMarcas tbody").on('click', '.btn-eliminar', function () {
             let marcaSeleccionada = $(this).closest("tr");
             let data = tablaData.row(marcaSeleccionada).data();
 
@@ -187,13 +187,16 @@
 
 
                             if (data.resultado) {
-
+                                
                                 tablaData.row(marcaSeleccionada).remove().draw();
 
                                 // swal("Deleted!", "Your imaginary file has been deleted.", "success");
                             } else {
 
-                                swal("No se pudo eliminar", data.mensaje, "error");
+                                //console.log("no se pudo eliminar la marca porque esta relacionado con un producto")
+                                console.log("no se pudo eliminar la marca porque esta relacionado con un producto!! ")
+                                //swal("Here's a message!", "It's pretty, isn't it?")
+
                             }
 
                         },
