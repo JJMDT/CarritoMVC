@@ -58,5 +58,12 @@ namespace CapaPresentacionAdmin.Controllers
             respuesta = new CN_Usuarios().Eliminar(id, out mensaje);
             return Json(new { resultado = respuesta, mensaje = mensaje }, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public JsonResult VistaDashBoard()
+        {
+            DashBoard objeto = new CN_Reportes().VerDashBoard();
+            return Json(new {resultado = objeto}, JsonRequestBehavior.AllowGet);
+        }
     }
 }
