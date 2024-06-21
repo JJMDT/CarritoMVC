@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using CapaDatos;
@@ -109,6 +110,46 @@ namespace CapaNegocio
             return objCapaDato.Eliminar(id, out mensaje);
         }
 
-      
+        //cambiar clave
+
+        public bool CambiarPassword(int idUsuario, string newPassword, out string mensaje)
+        {
+            return objCapaDato.CambiarPassword(idUsuario,newPassword, out mensaje);
+        }
+
+        //reestablcer password
+        public bool ReestablecerPassword(int idUsuario, string email, out string mensaje)
+        {
+            mensaje = string.Empty;
+            string newPassword = CN_Recursos.GenerarClave();
+            bool result = objCapaDato.ReestablecerPassword(idUsuario, CN_Recursos.ConvertirSha256(newPassword), out mensaje);
+
+            if (result)
+            {
+                string asunto = "Password reestablecido";
+                string mensaje_email = " Su cuenta fue reestablecida correctamente, su password es: !clave!";
+                mensaje_email = mensaje_email.Replace("!clave!", newPassword);
+                bool respuesta = CN_Recursos.EnviarEmail(email, asunto, mensaje_email);
+
+                if (respuesta)
+                {
+                    return true;
+
+                }
+                else
+                {
+                    mensaje = "No se pudo enviar el email";
+                    return false;
+                }
+            }
+
+            else
+            {
+                mensaje = "No se pudo reestablecer el password";
+
+                return false;
+            }
+
+        }
     }
 }

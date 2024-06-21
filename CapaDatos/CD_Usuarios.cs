@@ -152,5 +152,60 @@ namespace CapaDatos
             return resultado;
         }
 
+        //poder cambiar la clave
+
+        public bool CambiarPassword(int idUsuario, string newPassword, out string mensaje)
+        {
+            bool resultado = false;
+            mensaje = string.Empty;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(Conexion.conn))
+                {
+                    SqlCommand cmd = new SqlCommand("update usuario set password = @newPassword, reestablecer = 0 where idUsuario = @id", conn);
+                    cmd.Parameters.AddWithValue("@id", idUsuario);
+                    cmd.Parameters.AddWithValue("@newPassword", newPassword);
+                    cmd.CommandType = CommandType.Text;
+                    conn.Open();
+                    resultado = cmd.ExecuteNonQuery() > 0 ? true : false;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                resultado = false;
+                mensaje = ex.Message;
+            }
+            return resultado;
+        }
+
+        //reestablecer clave 
+
+        public bool ReestablecerPassword(int idUsuario, string newPassword, out string mensaje)
+        {
+            bool resultado = false;
+            mensaje = string.Empty;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(Conexion.conn))
+                {
+                    SqlCommand cmd = new SqlCommand("update usuario set password = @newPassword, reestablecer = 1 where idUsuario = @id", conn);
+                    cmd.Parameters.AddWithValue("@id", idUsuario);
+                    cmd.Parameters.AddWithValue("@newPassword", newPassword);
+                    cmd.CommandType = CommandType.Text;
+                    conn.Open();
+                    resultado = cmd.ExecuteNonQuery() > 0 ? true : false;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                resultado = false;
+                mensaje = ex.Message;
+            }
+            return resultado;
+        }
     }
 }

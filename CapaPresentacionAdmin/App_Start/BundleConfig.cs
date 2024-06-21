@@ -17,9 +17,10 @@ namespace CapaPresentacionAdmin
                        "~/Scripts/DataTables/dataTables.responsive.js",
                        "~/Scripts/sweetalert.min.js",
                        "~/Scripts/jquery.validate.js",
+                       "~/Scripts/jquery-ui-1.12.1.js",
                        "~/Scripts/scripts.js"
 
-                       
+
                         ));
 
 
@@ -40,6 +41,7 @@ namespace CapaPresentacionAdmin
                       "~/Content/Site.css",
                       "~/Content/DataTables/css/jquery.dataTables.css",
                       "~/Content/DataTables/css/responsive.dataTables.css",
+                      "~/Content/themes/base/jquery-ui.css",
                       "~/Content/sweetalert.css"));
 
             
