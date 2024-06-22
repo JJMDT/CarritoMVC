@@ -14,6 +14,8 @@ using System.Web.Mvc;
 
 namespace CapaPresentacionAdmin.Controllers
 {
+    [Authorize]
+
     public class MantenimientoController : Controller
     {
         // GET: Mantenimiento
