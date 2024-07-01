@@ -1,10 +1,11 @@
-﻿using CapaDatos;
-using CapaEntidad;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using CapaDatos;
+using CapaEntidad;
 
 namespace CapaNegocio
 {
@@ -32,15 +33,8 @@ namespace CapaNegocio
             {
                 mensaje = "El email de cliente no puede ser vacio";
             }
-            if (string.IsNullOrEmpty(obj.password) || string.IsNullOrWhiteSpace(obj.password))
-            {
-                // obj.password = "Cliente123"; // Contraseña por defecto
-                //si la clave es varia , genera una clave automatica aleatoria
-                obj.password = CN_Recursos.GenerarClave();
-            }
+           
 
-            // Convertir la contraseña a SHA-256
-            // obj.password = CN_Recursos.ConvertirSha256(obj.password);
 
             // Proceder con el registro del Cliente
             if (string.IsNullOrEmpty(mensaje))

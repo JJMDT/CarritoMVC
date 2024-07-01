@@ -1,11 +1,8 @@
-﻿using CapaEntidad;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
+using CapaEntidad;
 
 namespace CapaDatos
 {
@@ -53,33 +50,47 @@ namespace CapaDatos
             {
                 using (SqlConnection oConn = new SqlConnection(Conexion.conn))
                 {
-                    string query = "select idCliente, nombre, apellido, email, password, reestablecer from cliente";
-
-                    SqlCommand cmd = new SqlCommand(query, oConn);
-                    cmd.CommandType = CommandType.Text;
-
+                    Console.WriteLine("Abriendo conexión...");
                     oConn.Open();
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    Console.WriteLine("Conexión abierta.");
+
+                    string query = "SELECT idCliente, nombre, apellido, email, password, restablecer FROM cliente";
+                    using (SqlCommand cmd = new SqlCommand(query, oConn))
                     {
-                        while (dr.Read())
+                        cmd.CommandType = CommandType.Text;
+
+                        Console.WriteLine("Ejecutando comando SQL...");
+                        using (SqlDataReader dr = cmd.ExecuteReader())
                         {
-                            lista.Add(
-                                new Cliente()
+                            if (dr.HasRows)
+                            {
+                                Console.WriteLine("Datos obtenidos de la base de datos:");
+                                while (dr.Read())
                                 {
-                                    idCliente = Convert.ToInt32(dr["idCliente"]),
-                                    nombre = dr["nombre"].ToString(),
-                                    apellido = dr["apellido"].ToString(),
-                                    email = dr["email"].ToString(),
-                                    password = dr["password"].ToString(),
-                                    reestablecer = Convert.ToBoolean(dr["reestablecer"]),
+                                    Console.WriteLine($"idCliente: {dr["idCliente"]}, email: {dr["email"]}");
+
+                                    lista.Add(new Cliente()
+                                    {
+                                        idCliente = Convert.ToInt32(dr["idCliente"]),
+                                        nombre = dr["nombre"].ToString(),
+                                        apellido = dr["apellido"].ToString(),
+                                        email = dr["email"].ToString(),
+                                        password = dr["password"].ToString(),
+                                        reestablecer = Convert.ToBoolean(dr["restablecer"]),
+                                    });
                                 }
-                            );
+                            }
+                            else
+                            {
+                                Console.WriteLine("No se encontraron filas.");
+                            }
                         }
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine("Error al listar clientes: " + ex.Message);
                 lista = new List<Cliente>();
             }
 
