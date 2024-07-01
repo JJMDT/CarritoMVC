@@ -33,7 +33,7 @@ namespace CapaNegocio
             {
                 mensaje = "El email de cliente no puede ser vacio";
             }
-           
+
 
 
             // Proceder con el registro del Cliente

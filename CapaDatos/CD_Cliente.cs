@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CapaEntidad;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using CapaEntidad;
 
 namespace CapaDatos
 {
@@ -21,7 +21,7 @@ namespace CapaDatos
                     cmd.Parameters.AddWithValue("nombre", obj.nombre);
                     cmd.Parameters.AddWithValue("apellido", obj.apellido);
                     cmd.Parameters.AddWithValue("email", obj.email);
-                    cmd.Parameters.AddWithValue("password", obj.password);      
+                    cmd.Parameters.AddWithValue("password", obj.password);
                     cmd.Parameters.Add("resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("mensaje", SqlDbType.VarChar, 255).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -106,7 +106,7 @@ namespace CapaDatos
             {
                 using (SqlConnection conn = new SqlConnection(Conexion.conn))
                 {
-                    SqlCommand cmd = new SqlCommand("update cliente set password = @newPassword, reestablecer = 0 where idCliente = @id", conn);
+                    SqlCommand cmd = new SqlCommand("update cliente set password = @newPassword, restablecer = 0 where idCliente = @id", conn);
                     cmd.Parameters.AddWithValue("@id", idCliente);
                     cmd.Parameters.AddWithValue("@newPassword", newPassword);
                     cmd.CommandType = CommandType.Text;
@@ -134,7 +134,7 @@ namespace CapaDatos
             {
                 using (SqlConnection conn = new SqlConnection(Conexion.conn))
                 {
-                    SqlCommand cmd = new SqlCommand("update cliente set password = @newPassword, reestablecer = 1 where idCliente = @id", conn);
+                    SqlCommand cmd = new SqlCommand("update cliente set password = @newPassword, restablecer = 1 where idCliente = @id", conn);
                     cmd.Parameters.AddWithValue("@id", idCliente);
                     cmd.Parameters.AddWithValue("@newPassword", newPassword);
                     cmd.CommandType = CommandType.Text;

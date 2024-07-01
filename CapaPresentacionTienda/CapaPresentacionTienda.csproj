@@ -205,6 +205,7 @@
     <Content Include="Views\Acceso\Registrar.cshtml" />
     <Content Include="Views\Acceso\Reestablecer.cshtml" />
     <Content Include="Views\Tienda\Index.cshtml" />
+    <Content Include="Views\Acceso\CambiarPassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
