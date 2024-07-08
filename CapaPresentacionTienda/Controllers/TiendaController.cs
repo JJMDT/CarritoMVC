@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using CapaEntidad;
 using CapaNegocio;
 using System.IO;
+using System.Web.Mvc.Routing.Constraints;
 
 namespace CapaPresentacionTienda.Controllers
 {
@@ -16,6 +17,23 @@ namespace CapaPresentacionTienda.Controllers
         {
             return View();
         }
+
+        public ActionResult DetalleProducto(int idproducto = 0)
+        {
+            Producto oProducto = new Producto();
+            bool conversion;
+
+            oProducto=new CN_Productos().Listar().Where(p => p.idProducto == idproducto).FirstOrDefault();
+
+            if(oProducto != null)
+            {
+                oProducto.base64 = CN_Recursos.ConvertirBase64(Path.Combine(oProducto.rutaImagen, oProducto.nombreImagen), out conversion);
+                oProducto.extension = Path.GetExtension(oProducto.nombreImagen);
+            }
+            return View(oProducto);
+        }
+
+
 
         [HttpGet]
         public JsonResult ListarCategorias()
