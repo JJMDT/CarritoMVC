@@ -35,7 +35,7 @@
                     {
 
 
-                        <a class="btn btn-outline-dark" aria-current="page" href="@Url.Action("Carrito","Tienda")"><i class="bi-cart-fill me-1"></i> Cart <span class="badge bg-dark text-white ms-1 rounded-pill">0</span></a>
+                        <a class="btn btn-outline-dark" aria-current="page" href="@Url.Action("Carrito","Tienda")"><i class="bi-cart-fill me-1"></i> Cart <span id="cantidadCarrito" class="badge bg-dark text-white ms-1 rounded-pill">0</span></a>
 
                         <ul class="navbar-nav ms-auto me-0 me-md-3 my-2 my-md-0">
                             <li class="nav-item dropdown">
@@ -75,5 +75,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
     <script src="js/scripts.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            MostrarCantidadCarrito()
+        })
+
+        function MostrarCantidadCarrito() {
+
+            if ($("#cantidadCarrito").length > 0) {
+                $.ajax({
+
+                    url: "@Url.Action("CantidadEnCarrito", "Tienda")",
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+
+                        $("#cantidadCarrito").text(data.cantidad)
+
+                    }
+                })
+            }
+        }
+    </script>
+
 </body>
 </html>
