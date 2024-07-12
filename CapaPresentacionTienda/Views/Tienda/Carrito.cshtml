@@ -43,9 +43,9 @@
                                             <input class="form-control form-control-sm" type="text" id="txttelefono" autocomplete="off">
                                         </div>
                                         <div class="mb-2">
-                                            <button class="btn btn-success" type="button"onclick="RealizarPago()">
+                                            <button class="btn btn-success" type="button" onclick="RealizarPago()">
                                                 <i class="fab fa-paypal"></i> Terminar y Procesar Pago
-                                                </button>
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -58,3 +58,86 @@
         </div>
     </div>
 </div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            ListarDepartamento();
+        });
+
+        function ListarDepartamento() {
+            $("<option>").attr({ "value": "00", "disabled": "disabled", "selected": "true" }).text("Seleccionar").appendTo("#cbodepartamento");
+
+            $.ajax({
+                url: "@Url.Action("ObtenerDepartamento", "Tienda")",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.lista != null) {
+                        $.each(data.lista, function (i, item) {
+                            $("<option>").attr({ "value": item.idDepartamento }).text(item.descripcion).appendTo("#cbodepartamento");
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al obtener los departamentos:", error);
+                }
+            });
+        }
+
+        $("#cbodepartamento").on("change", function () {
+            ListarProvincia();
+        });
+
+        function ListarProvincia() {
+            $("#cboprovincia").html("");
+            $("<option>").attr({ "value": "00", "disabled": "disabled", "selected": "true" }).text("Seleccionar").appendTo("#cboprovincia");
+
+            $.ajax({
+                url: "@Url.Action("ObtenerProvincia", "Tienda")",
+                type: "POST",
+                data: JSON.stringify({ idDepartamento: $("#cbodepartamento option:selected").val() }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.lista != null) {
+                        $.each(data.lista, function (i, item) {
+                            $("<option>").attr({ "value": item.idProvincia }).text(item.descripcion).appendTo("#cboprovincia");
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al obtener las provincias:", error);
+                }
+            });
+        }
+
+        
+        $("#cbodepartamento").on("change", function () {
+            ListarProvincia();
+        });
+
+        function ListarProvincia() {
+            $("#cboprovincia").html("");
+            $("<option>").attr({ "value": "00", "disabled": "disabled", "selected": "true" }).text("Seleccionar").appendTo("#cboprovincia");
+
+            $.ajax({
+                url: "@Url.Action("ObtenerProvincia", "Tienda")",
+                type: "POST",
+                data: JSON.stringify({ idDepartamento: $("#cbodepartamento option:selected").val() }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.lista != null) {
+                        $.each(data.lista, function (i, item) {
+                            $("<option>").attr({ "value": item.idProvincia }).text(item.descripcion).appendTo("#cboprovincia");
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al obtener las provincias:", error);
+                }
+            });
+        }
+    </script>
+}
