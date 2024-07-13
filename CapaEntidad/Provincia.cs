@@ -11,6 +11,5 @@ namespace CapaEntidad
         public string idProvincia { get; set; }
         public string descripcion { get; set; }
 
-        public string idDepartamento { get; set; }
     }
 }

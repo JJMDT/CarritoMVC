@@ -11,41 +11,8 @@ namespace CapaDatos
 {
     public class CD_Ubicacion
     {
-        public List<Departamento> ObtenerDepartamento()
-        {
-            List<Departamento> lista = new List<Departamento>();
 
-            try
-            {
-                using (SqlConnection oConn = new SqlConnection(Conexion.conn))
-                {
-                    string query = "select * from departamento";
-                    SqlCommand cmd = new SqlCommand(query, oConn);
-                    cmd.CommandType = CommandType.Text;
-                    oConn.Open();
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        while (dr.Read())
-                        {
-                            lista.Add(
-                                new Departamento()
-                                {
-                                    idDepartamento =dr["idDepartamento"].ToString(),
-                                    descripcion = dr["descripcion"].ToString(),
-                                }
-                            );
-                        }
-                    }
-                }
-            }
-            catch
-            {
-                lista = new List<Departamento>();
-            }
-            return lista;
-        }
-
-        public List<Provincia> ObtenerProvincia(string iddep)
+        public List<Provincia> ObtenerProvincia()
         {
             List<Provincia> lista = new List<Provincia>();
 
@@ -53,9 +20,8 @@ namespace CapaDatos
             {
                 using (SqlConnection oConn = new SqlConnection(Conexion.conn))
                 {
-                    string query = "select * from provincia where idDepartamento = @iddepartamento";
+                    string query = "select * from provincia ";
                     SqlCommand cmd = new SqlCommand(query, oConn);
-                    cmd.Parameters.AddWithValue("@iddepartamento", iddep);
                     cmd.CommandType = CommandType.Text;
                     oConn.Open();
                     using (SqlDataReader dr = cmd.ExecuteReader())
@@ -80,18 +46,17 @@ namespace CapaDatos
             return lista;
         }
 
-        public List<Distrito> ObtenerDistrito(string iddepartamento, string idprovincia)
+        public List<Localidad> ObtenerLocalidad(string idprov)
         {
-            List<Distrito> lista = new List<Distrito>();
+            List<Localidad> lista = new List<Localidad>();
 
             try
             {
                 using (SqlConnection oConn = new SqlConnection(Conexion.conn))
                 {
-                    string query = "select * from distrito where idProvincia = @idprovincia and idDepartamento = @iddepartamento";
+                    string query = "SELECT * FROM localidad AS loc INNER JOIN provincia p ON p.idProvincia = loc.idProvincia WHERE loc.idProvincia = @idprov";
                     SqlCommand cmd = new SqlCommand(query, oConn);
-                    cmd.Parameters.AddWithValue("@iddepartamento", iddepartamento);
-                    cmd.Parameters.AddWithValue("@idprovincia", idprovincia);
+                    cmd.Parameters.AddWithValue("@idprov", idprov);
                     cmd.CommandType = CommandType.Text;
                     oConn.Open();
                     using (SqlDataReader dr = cmd.ExecuteReader())
@@ -99,22 +64,29 @@ namespace CapaDatos
                         while (dr.Read())
                         {
                             lista.Add(
-                                new Distrito()
+                                new Localidad()
                                 {
-                                    idDistrito = dr["idDistrito"].ToString(),
+                                    idLocalidad = dr["idLocalidad"].ToString(),
                                     descripcion = dr["descripcion"].ToString(),
+
                                 }
                             );
                         }
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                lista = new List<Distrito>();
+                Console.WriteLine("Error al obtener las localidades: " + ex.Message);
+
+                lista = new List<Localidad>();
             }
             return lista;
         }
+
+       
+
+       
     }
 
     

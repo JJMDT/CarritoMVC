@@ -13,20 +13,17 @@ namespace CapaNegocio
     {
         private CD_Ubicacion objCapaDato = new CD_Ubicacion();
 
-        public List<Departamento> ObtenerDepartamento()
+        public List<Localidad> ObtenerLocalidad(string idprov)
         {
-            return objCapaDato.ObtenerDepartamento();
+            return objCapaDato.ObtenerLocalidad(idprov);
         }
 
-        public List<Provincia> ObtenerProvincia(string iddep)
+        public List<Provincia> ObtenerProvincia()
         {
-            return objCapaDato.ObtenerProvincia(iddep);
+            return objCapaDato.ObtenerProvincia();
         }
 
-        public List<Distrito> ObtenerDistrito(string iddepartamento, string idprovincia)
-        {
-            return objCapaDato.ObtenerDistrito(iddepartamento, idprovincia);
-        }
+     
 
     }
 }
