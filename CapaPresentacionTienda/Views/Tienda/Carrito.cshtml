@@ -59,6 +59,11 @@
                                         </div>
                                         </div>
                                 </div>
+                                <div class="d-flex justify-content-end">
+                                    <label class="align-self-center">
+                                        <b>Total: S/. <span id="total"> 500</span></b>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                         @*detalle envio*@
@@ -107,9 +112,81 @@
 @section scripts{
     <script>
         $(document).ready(function () {
-            ListarProvincia();
-        });
 
+            $.ajax({
+
+                url: "@Url.Action("ListarProductosCarrito", "Tienda")",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    $("#productosEnCarrito").html("");
+                    $("#productosEnCarrito").LoadingOverlay("hide");
+
+                    $.each(response.data, function (i, item) {
+
+                        $("<div>").addClass("card mb-2 card-producto").append(
+                            $("<div>").addClass("card-body").append(
+                                $("<div>").addClass("row").append(
+                                    //1
+                                    $("<div>").addClass("col-sm-2 align-self-center d-flex justify-content-center").append(
+                                        $("<img>").addClass("rounded").attr({ "src": "data:image/" + item.oProducto.extension + ";base64," + item.oProducto.base64 }).css({"width":"100px","height":"100px"})
+                                    ),
+                                    //2
+                                    $("<div>").addClass("col-sm-4 align-self-center").append(
+                                        $("<span>").addClass("font-wigth-bold d-block").text(item.oProducto.oMarca.descripcion),
+                                        $("<span>").text(item.oProducto.nombre)
+                                    ),
+
+                                    //3
+                                    $("<div>").addClass("col-sm-2 align-self-center").append(
+                                        $("<span>").text("$"+item.oProducto.precio.toFixed(2))
+
+                                    ),
+                                    //4
+                                    $("<div>").addClass("col-sm-2 align-self-center").append(
+                                        $("<div>").addClass("d-flex").append(
+
+                                            $("<button>").addClass("btn btn-outline-secondary btn-restar rounded-0").append(
+                                                $("<i>").addClass("fas fa-minus")
+                                            ),
+                                            $("<input>").addClass("form-control input-cantidad p-1 text-center rounded-0").css({ "width": "40", "height": "40px" }).data("oProducto", item.oProducto)
+                                                .val(item.cantidad)
+                                                .attr({"disabled":"disabled"}),
+
+                                        $("<button>").addClass("btn btn-outline-secondary btn-sumar rounded-0").append(
+                                            $("<i>").addClass("fas fa-plus")
+                                        )
+                                        )
+                                        ),
+                                $("<div>").addClass("col-sm-2 align-self-center").append(
+                                    $("<button>").addClass("btn btn-outline-danger btn-eliminar").append(
+                                        $("<i>").addClass("fas fa-trash")," Eliminar"
+                                    )
+                                )
+                                ),
+
+                                    //5
+                             )
+
+                        ).appendTo("#productosEnCarrito")
+                    })
+                    SumarTotal();
+
+
+                },
+                error: function (error) {
+                    $("#productosEnCarrito").LoadingOverlay("hide");
+                },
+                beforeSend: function () {
+                    $("#productosEnCarrito").LoadingOverlay("show");
+                }
+            })
+
+
+            ListarProvincia();
+        }
+        )
         function ListarProvincia() {
             $("<option>").attr({ "value": "00", "disabled": "disabled", "selected": "true" }).text("Seleccionar").appendTo("#cboprovincia");
 
@@ -163,6 +240,19 @@
         }
     });
 }
+        function SumarTotal() {
+            var sumaTotal = parseFloat(0)
 
+            $("input.input-cantidad").each(function (i) {
+                var precio = $(this).data("oProducto").precio;
+                var cantidad = parseFloat($(this).val());
+                var subTotal = precio * cantidad;
+
+                sumaTotal += subTotal;
+            })
+
+            $("#total").text(sumaTotal.toFixed(2));
+            $("#total").data("sumaTotal", sumaTotal);
+        }
     </script>
 }

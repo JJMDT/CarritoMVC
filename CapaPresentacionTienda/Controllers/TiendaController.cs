@@ -117,7 +117,7 @@ namespace CapaPresentacionTienda.Controllers
         [HttpPost]
         public JsonResult ListarProductosCarrito()
         {
-            int idcliente = ((Cliente)Session["Clietne"]).idCliente;
+            int idcliente = ((Cliente)Session["Cliente"]).idCliente;
             List<Carrito> oLista = new List<Carrito>();
             bool conversion;
 
