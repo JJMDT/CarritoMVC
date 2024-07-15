@@ -161,8 +161,8 @@
                                         ),
                                 $("<div>").addClass("col-sm-2 align-self-center").append(
                                     $("<button>").addClass("btn btn-outline-danger btn-eliminar").append(
-                                        $("<i>").addClass("fas fa-trash")," Eliminar"
-                                    )
+                                        $("<i>").addClass("fas fa-trash"), " Eliminar"
+                                    ).data("idproducto",item.oProducto.idProducto),
                                 )
                                 ),
 
@@ -212,34 +212,39 @@
             ListarLocalidad();
         });
 
-  function ListarLocalidad() {
-    $("#cbolocalidad").html(""); // Limpiar opciones previas
 
-    var idProvincia = $("#cboprovincia").val(); // Obtener el valor seleccionado del select de provincias
+      function ListarLocalidad() {
 
-    // Añadir opción inicial "Seleccionar"
-    $("<option>").attr({ "value": "00", "disabled": "disabled", "selected": "true" }).text("Seleccionar").appendTo("#cbolocalidad");
+        $("#cbolocalidad").html(""); // Limpiar opciones previas
 
-    // Realizar la solicitud AJAX para obtener las localidades
-    $.ajax({
-        url: '@Url.Action("ObtenerLocalidad", "Tienda")', // Ruta del controlador y acción
-        type: "POST",
-        data: JSON.stringify({ idprov: idProvincia }), // Enviar el idProvincia como JSON
-        dataType: "json",
-        contentType: "application/json; charset=utf-8",
-        success: function (data) {
-            if (data.lista != null) {
-                // Iterar sobre la lista de localidades y agregar opciones al select
-                $.each(data.lista, function (i, item) {
-                    $("<option>").attr({ "value": item.idLocalidad }).text(item.descripcion).appendTo("#cbolocalidad");
-                });
+        var idProvincia = $("#cboprovincia").val(); // Obtener el valor seleccionado del select de provincias
+
+        // Añadir opción inicial "Seleccionar"
+        $("<option>").attr({ "value": "00", "disabled": "disabled", "selected": "true" }).text("Seleccionar").appendTo("#cbolocalidad");
+
+        // Realizar la solicitud AJAX para obtener las localidades
+        $.ajax({
+            url: '@Url.Action("ObtenerLocalidad", "Tienda")', // Ruta del controlador y acción
+            type: "POST",
+            data: JSON.stringify({ idprov: idProvincia }), // Enviar el idProvincia como JSON
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data.lista != null) {
+                    // Iterar sobre la lista de localidades y agregar opciones al select
+                    $.each(data.lista, function (i, item) {
+                        $("<option>").attr({ "value": item.idLocalidad }).text(item.descripcion).appendTo("#cbolocalidad");
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error al obtener las localidades:", error);
             }
-        },
-        error: function (xhr, status, error) {
-            console.error("Error al obtener las localidades:", error);
+
+        });
+
         }
-    });
-}
+
         function SumarTotal() {
             var sumaTotal = parseFloat(0)
 
@@ -254,5 +259,143 @@
             $("#total").text(sumaTotal.toFixed(2));
             $("#total").data("sumaTotal", sumaTotal);
         }
+
+        $(document).on("click", ".btn-sumar", function () {
+
+            var div_contenedor = $(this).parent("div.d-flex");
+            var input_cantidad = $(div_contenedor).find("input.input-cantidad");
+            var btn = $(this)
+
+            var idproducto = $(input_cantidad).data("oProducto").idProducto;
+
+                 $.ajax({
+                 url: '@Url.Action("OperacionCarrito", "Tienda")', // Ruta del controlador y acción
+                 type: "POST",
+                     data: JSON.stringify({ idproducto: idproducto,  sumar: true }), // Enviar el idProvincia como JSON
+                     dataType: "json",
+                 contentType: "application/json; charset=utf-8",
+                     success: function (data) {
+                         $(btn).LoadingOverlay("hide")
+
+
+                         if (data.respuesta) {
+
+                             var cantidad = parseInt($(input_cantidad).val()) + 1;
+
+                             $(input_cantidad).val(cantidad)
+
+                             SumarTotal()
+
+                         } else {
+
+                             swal("", "cantidad maxima alcanzada", "warning")
+
+                         }
+
+                     },
+                     beforeSend: function () {
+                         $(btn).LoadingOverlay("show")
+                     },
+                     error: function (error) {
+                         $(btn).LoadingOverlay("hide")
+
+                     }
+
+
+                 })
+
+
+        })
+
+        $(document).on("click", ".btn-restar", function () {
+
+            var div_contenedor = $(this).parent("div.d-flex");
+            var input_cantidad = $(div_contenedor).find("input.input-cantidad");
+            var btn = $(this)
+            var idproducto = $(input_cantidad).data("oProducto").idProducto;
+            var cantidad = parseInt($(input_cantidad).val()) - 1;
+
+            if (cantidad >= 1) {
+
+                 $.ajax({
+                 url: '@Url.Action("OperacionCarrito", "Tienda")', // Ruta del controlador y acción
+                 type: "POST",
+                     data: JSON.stringify({ idproducto: idproducto,  sumar: false }), // Enviar el idProvincia como JSON
+                     dataType: "json",
+                     contentType: "application/json; charset=utf-8",
+                     success: function (data) {
+                         $(btn).LoadingOverlay("hide")
+
+
+                         if (data.respuesta) {
+
+
+                             $(input_cantidad).val(cantidad)
+
+                             SumarTotal()
+
+                         } else {
+
+                             swal("", data.mensaje, "warning")
+
+                         }
+
+                     },
+                     beforeSend: function () {
+                         $(btn).LoadingOverlay("show")
+                     },
+                     error: function (error) {
+                         $(btn).LoadingOverlay("hide")
+
+                     }
+
+
+                 })
+
+            }
+
+
+        })
+
+
+         $(document).on("click", ".btn-eliminar", function () {
+
+           
+             var idproducto = $(this).data("idproducto");
+             var card_producto = $(this).parents("div.card-producto");
+
+             
+
+                  $.ajax({
+                  url: '@Url.Action("EliminarCarrito", "Tienda")', // Ruta del controlador y acción
+                  type: "POST",
+                  data: JSON.stringify({ idproducto: idproducto }), // Enviar el idProvincia como JSON
+                  dataType: "json",
+                  contentType: "application/json; charset=utf-8",
+                      success: function (data) {
+
+
+                          if (data.respuesta) {
+
+                              card_producto.remove();
+                              MostrarCantidadCarrito()
+                              SumarTotal()
+
+                          } else {
+
+                              swal("", data.mensaje, "warning")
+
+                          }
+
+                      }
+                   
+
+
+                  })
+
+             
+
+
+         })     
     </script>
 }

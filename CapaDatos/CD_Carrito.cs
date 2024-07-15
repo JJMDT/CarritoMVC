@@ -58,30 +58,25 @@ namespace CapaDatos
                     SqlCommand cmd = new SqlCommand("OperacionCarrito", oConn);
                     cmd.Parameters.AddWithValue("idCliente", idcliente);
                     cmd.Parameters.AddWithValue("idProducto", idproducto);
-                    cmd.Parameters.AddWithValue("sumar", sumar);
+                    cmd.Parameters.AddWithValue("sumar", sumar ? 1 : 0); // true: 1, false: 0
                     cmd.Parameters.Add("resultado", SqlDbType.Bit).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
 
                     cmd.CommandType = CommandType.StoredProcedure;
                     oConn.Open();
                     cmd.ExecuteNonQuery();
-                    resultado = Convert.ToBoolean(cmd.Parameters["Resultado"].Value);
-                    mensaje = cmd.Parameters["Resultado"].Value.ToString();
-
-
+                    resultado = Convert.ToBoolean(cmd.Parameters["resultado"].Value);
+                    mensaje = cmd.Parameters["mensaje"].Value.ToString();
                 }
             }
             catch (Exception ex)
             {
                 resultado = false;
                 mensaje = ex.Message;
-
             }
             return resultado;
-            ;
-
-
         }
+
 
         //select count(*) from carrito where idCliente = 1
         public int CantidadEnCarrito(int idcliente)
